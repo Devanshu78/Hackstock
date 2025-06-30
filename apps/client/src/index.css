@@ -1,0 +1,51 @@
+@import "tailwindcss";
+
+@layer base {
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    /* -webkit-file-upload-button: none; */
+    margin: 0;
+  }
+}
+
+@theme {
+  --font-ag: "Agbalumo", "system-ui";
+  --primary-color: #dfbe92;
+  --secondary-color: #ef9651;
+  --action-color: #3f7d58;
+  --dark-action-color: #27553c;
+  --bg-color: #efefef;
+  --icons-color: #ec5228;
+  --hackStock: #5e17eb;
+}
+
+input[type="file"]::-webkit-file-upload-button {
+  display: none;
+}
+
+@layer utilities {
+  @keyframes moving-pattern {
+    to {
+      background-position: 100vmin 20vmin, -100vmin -25vmin;
+    }
+  }
+
+  .animate-moving-pattern {
+    background-color: #7231ec;
+    background-image: radial-gradient(
+        closest-side at 50% 50%,
+        #ffc107 100%,
+        rgba(0, 0, 0, 0)
+      ),
+      radial-gradient(closest-side at 50% 50%, #e91e63 100%, rgba(0, 0, 0, 0));
+    background-repeat: no-repeat;
+    background-size: 40vmin 40vmin;
+    background-position: -100vmin 20vmin, 100vmin -25vmin;
+    animation: moving-pattern 5s linear infinite both;
+  }
+
+  .font-courgette {
+    font-family: var(--font-courgette);
+  }
+}

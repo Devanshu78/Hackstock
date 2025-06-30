@@ -1,0 +1,29 @@
+version: "3.8"
+services:
+  redis:
+    image: redis:7
+
+  server:
+    build: ./apps/server
+    env_file:
+      - ./apps/server/.env
+    depends_on:
+      - redis
+
+  client:
+    build: ./apps/client
+    ports:
+      - "3000:80"
+    env_file:
+      - ./apps/client/.env
+    depends_on:
+      - server
+
+  admin:
+    build: ./apps/admin
+    ports:
+      - "3001:80"
+    env_file:
+      - ./apps/admin/.env
+    depends_on:
+      - server
