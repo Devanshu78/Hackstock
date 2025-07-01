@@ -1,13 +1,6 @@
 // worker.js
 import { Worker } from "bullmq";
-import IORedis from "ioredis";
-
-const connection = new IORedis({
-  host: process.env.REDIS_HOST || "localhost",
-  port: process.env.REDIS_PORT ? parseInt(process.env.REDIS_PORT) : 6379,
-
-  maxRetriesPerRequest: null,
-});
+import redisConnection from "../utils/redisConnection.js";
 import { processBid } from "../Controllers/admin/biddingController.js";
 
 const worker = new Worker(
@@ -18,7 +11,7 @@ const worker = new Worker(
     await processBid(bidData);
   },
   {
-    connection,
+    connection: redisConnection,
   }
 );
 

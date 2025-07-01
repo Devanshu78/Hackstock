@@ -2,6 +2,7 @@ import jwt from "jsonwebtoken";
 import { Student } from "../../models/studentSchema.js";
 import { Result } from "../../models/resultSchema.js";
 import { getAggregate } from "./aggregateController.js";
+import redisConnection from "../../utils/redisConnection.js";
 import {
   registerUserSchema,
   loginUserSchema,
