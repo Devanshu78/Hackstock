@@ -12,6 +12,8 @@ const worker = new Worker(
   },
   {
     connection: redisConnection,
+    removeOnComplete: true,
+    removeOnFail: true,
   }
 );
 

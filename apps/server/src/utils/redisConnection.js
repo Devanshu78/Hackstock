@@ -6,4 +6,15 @@ const redisConnection = new IORedis({
   maxRetriesPerRequest: null,
 });
 
+export function generateRedisKey(prefix, id, options = {}) {
+  let key = `${prefix}:${id}`;
+  if (options && Object.keys(options).length > 0) {
+    const extra = Object.entries(options)
+      .map(([k, v]) => `${k}=${v}`)
+      .join("&");
+    key += `?${extra}`;
+  }
+  return key;
+}
+
 export default redisConnection;

@@ -2,6 +2,9 @@ import jwt from "jsonwebtoken";
 import { Student } from "../../models/studentSchema.js";
 import { Result } from "../../models/resultSchema.js";
 import { getAggregate } from "./aggregateController.js";
+import redisConnection, {
+  generateRedisKey,
+} from "../../utils/redisConnection.js";
 import {
   registerUserSchema,
   loginUserSchema,
@@ -153,9 +156,20 @@ const loginUser = async (req, res) => {
 const getUser = async (req, res) => {
   try {
     const user = req.user;
+    const redisKey = generateRedisKey("student", user._id);
+    const cachedUser = await redisConnection.get(redisKey);
+    if (cachedUser) {
+      console.log("User found in cache");
+      return res.status(200).json({
+        data: JSON.parse(cachedUser),
+        message: "Success",
+      });
+    }
+
     const users = await Student.findById({ _id: user._id })
       .select("-password")
       .populate({ path: "projects", model: "StudentProjects" });
+    await redisConnection.set(redisKey, JSON.stringify(users), "EX", 60 * 60); // Cache for 1 hour
     return res.status(200).json({ data: users, message: "Success" });
   } catch (error) {
     console.log(error);
