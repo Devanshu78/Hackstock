@@ -1,4 +1,5 @@
 import React from "react";
+import { componentSchema } from "../../../server/src/Validator/component-validator";
 
 function Card({ cardData }) {
   return (

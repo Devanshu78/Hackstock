@@ -11,6 +11,8 @@ import {
   validateUser,
   logoutUser,
   generateAccessToken,
+  registerManyUsers,
+  updateUserData
 } from "../Controllers/users/studentContollers.js";
 
 import { getComponent } from "../Controllers/admin/componentController.js";
@@ -36,6 +38,9 @@ router.route("/getuser").get(authMiddleware, getUser);
 router.route("/isAuthenticated").get(authMiddleware, validateUser);
 router.route("/refresh").get(generateAccessToken);
 
+//
+router.route("/registerManyUsers").post(registerManyUsers);
+router.route("/upgrade").patch(updateUserData);
 // get component
 router.route("/component").get(authMiddleware, getComponent);
 router.route("/event").get(authMiddleware, eventForUser);

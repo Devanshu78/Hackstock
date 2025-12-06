@@ -27,6 +27,11 @@ const studentSchema = new Schema(
       match: /^[0-9]{11}$/,
       message: "Enrollment ID must be exactly 11 digits long",
     },
+    cllgName : {
+      type: String,
+      required: true,
+      trim: true,
+    },
     course: {
       type: String,
       required: true,

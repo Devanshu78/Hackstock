@@ -39,6 +39,8 @@ export const registerUserSchema = loginUserSchema.extend({
     .min(3, { message: "Branch must be at least 3 characters long" })
     .transform((value) => value.toUpperCase()),
 
+  cllgName : z.string().trim(),
+
   semester: z
     .string()
     .trim()

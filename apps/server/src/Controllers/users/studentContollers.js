@@ -105,6 +105,134 @@ const registerUser = async (req, res) => {
   }
 };
 
+const registerManyUsers = async (req, res) => {
+  try {
+    const { users } = req.body; // Expecting an array of user objects
+    if (!Array.isArray(users) || users.length === 0) {
+      return res.status(400).json({ 
+        message: "Please provide an array of users to register" 
+      });
+    }
+
+    const results = {
+      successful: [],
+      failed: [],
+      totalProcessed: users.length
+    };
+
+    // Process each user
+    for (const userData of users) {
+      try {
+        // Validate the user data
+        const { data, error } = registerUserSchema.safeParse(userData);
+        if (error) {
+          results.failed.push({
+            userEmail: userData.userEmail || 'unknown',
+            reason: error.errors[0].message
+          });
+          continue;
+        }
+
+        const {
+          userEmail,
+          userName,
+          enrolmentNumber,
+          course,
+          branch,
+          semester,
+          password,
+          cllgName,
+        } = data;
+
+        // Check if user already exists
+        const existedUser = await Student.findOne({ userEmail });
+        if (existedUser) {
+          results.failed.push({
+            userEmail,
+            reason: "User already exists"
+          });
+          continue;
+        }
+
+        // Get result from Result collection
+        const ress = await Result.findOne({ enrolmentNumber });
+        const result = ress?.result;
+        if (!result || !ress) {
+          results.failed.push({
+            userEmail,
+            enrolmentNumber,
+            reason: "Enrolment number not found or no result available"
+          });
+          continue;
+        }
+
+        if (semester != ress.semester) {
+          results.failed.push({
+            userEmail,
+            enrolmentNumber,
+            reason: "Semester mismatch"
+          });
+          continue;
+        }
+
+        // Calculate points
+        const points = await setUserPoints(result, semester);
+
+        // Create the user
+        const userDetails = await Student.create({
+          userEmail,
+          userName,
+          enrolmentNumber,
+          course,
+          branch,
+          semester,
+          points,
+          password,
+          result,
+          cllgName,
+        });
+
+        const createdUser = await Student.findById(userDetails._id).select(
+          "-password"
+        );
+
+        if (createdUser) {
+          results.successful.push({
+            userEmail: createdUser.userEmail,
+            userName: createdUser.userName,
+            enrolmentNumber: createdUser.enrolmentNumber,
+          });
+        } else {
+          results.failed.push({
+            userEmail,
+            reason: "User created but could not be retrieved"
+          });
+        }
+
+      } catch (error) {
+        results.failed.push({
+          userEmail: userData.userEmail || 'unknown',
+          reason: error.message
+        });
+      }
+    }
+
+    return res.status(201).json({
+      message: "Batch registration completed",
+      summary: {
+        total: results.totalProcessed,
+        successful: results.successful.length,
+        failed: results.failed.length
+      },
+      data: results
+    });
+
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: error.message });
+  }
+};
+
 const loginUser = async (req, res) => {
   try {
     const { data, error } = loginUserSchema.safeParse(req.body);
@@ -258,6 +386,34 @@ const generateAccessToken = async (req, res) => {
   }
 };
 
+const updateUserData = async (req, res) => {
+  try {
+    const { cllgName } = req.body;
+    console.log({cllgName});
+    
+    if (!cllgName) {
+      return res.status(400).json({ 
+        message: "College name is required" 
+      });
+    }
+
+    // Update all students with the new field
+    const result = await Student.updateMany(
+      { cllgName: { $in: ["", null] } }, // Only update if cllgName is empty or null
+      { $set: { cllgName: cllgName } }
+    );
+
+    return res.status(200).json({
+      message: "Users updated successfully",
+      modifiedCount: result.modifiedCount,
+      matchedCount: result.matchedCount,
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: error.message });
+  }
+};
+
 export {
   registerUser,
   loginUser,
@@ -267,4 +423,6 @@ export {
   validateUser,
   logoutUser,
   generateAccessToken,
+  registerManyUsers,
+  updateUserData,
 };

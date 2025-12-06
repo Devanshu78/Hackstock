@@ -193,6 +193,16 @@ export const getWinnerResult = async (req, res) => {
   }
 };
 
+export const getAllWinners = async (req, res) => {
+  try {
+    const winners = await Winner.find();
+    return res.status(200).json(winners);
+  } catch (error) {
+    console.error("Error getting all winners:", error);
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
 export const processWinnerStatus = async (req, res) => {
   try {
     const { status } = req.body;

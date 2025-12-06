@@ -5,6 +5,7 @@ import useComponentService from "../apis/componentsApis";
 import useUserService from "../apis/usersApis";
 import { useBiddingStore } from "../apis/biddingApis";
 import { socketInstance } from "../apis/socketInstance";
+import Testimonials from "./Testimonials";
 
 function Home() {
   const { getComponentData, getComponent } = useComponentService();
@@ -79,6 +80,12 @@ function Home() {
             )
         )}
       </section>
+      <p className="text-center text-xl pb-2 animate-pulse text-red-600">
+        ⚠️ Total accumulated lead: 100gm, Copper: 500gm
+      </p>
+
+      <Testimonials />
+
       {shouldOpenPopUp && (
         <PopUp
           isOpen={isOpen}
