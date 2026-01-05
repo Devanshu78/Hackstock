@@ -1,64 +1,59 @@
-# Vidyut Bhandar Monorepo
+# HackStock Monorepo
 
-A full-stack project management and bidding platform for students and teachers, built with **React**, **Node.js/Express**, **MongoDB**, **Redis**, **BullMQ**, and **Docker**.  
-This monorepo contains three main applications: **Client** (student portal), **Admin** (teacher/admin portal), and **Server** (backend API).
+A full-stack project management and bidding platform for students and teachers, built with **React**, **Next.js**, **Node.js/Express**, **MongoDB**, **Redis**, **BullMQ**, and **Docker**.
 
----
-
-## Table of Contents
-
-- [Features](#features)
-- [Project Structure](#project-structure)
-- [Tech Stack](#tech-stack)
-- [Getting Started](#getting-started)
-- [Environment Variables](#environment-variables)
-- [Docker Usage](#docker-usage)
-- [Deployment](#deployment)
-- [Contributing](#contributing)
-- [License](#license)
+This monorepo contains four main applications:
+- **Client** - Student portal (React + Vite)
+- **Admin** - Teacher/Admin portal (React + Vite)
+- **Server** - Backend API (Node.js + Express)
+- **Landing** - Marketing website (Next.js)
 
 ---
 
-## Features
-
-- **Student Portal:** Project upload, bidding, dashboard, notifications, and profile management.
-- **Admin Portal:** Project verification, bidding management, results, and user management.
-- **Real-Time Bidding:** Powered by Socket.io and BullMQ.
-- **Authentication:** JWT-based secure login for students and teachers.
-- **File Uploads:** Integrated with Cloudinary.
-- **Robust API:** RESTful endpoints for all core features.
-- **Production-Ready:** Dockerized with Nginx reverse proxy and environment-based configuration.
-
----
-
-## Project Structure
+## 📁 Project Structure
 
 ```
-apps/
-  ├── admin/    # React app for teachers/admins
-  ├── client/   # React app for students
-  └── server/   # Node.js/Express backend API
-docker-compose.yml
+hackstock/
+├── client/           # React app for students (Vite)
+├── admin/            # React app for teachers/admins (Vite)
+├── server/           # Node.js/Express backend API
+├── landing/          # Next.js landing page
+├── docker-compose.yml
+└── eslint.config.js
 ```
 
 ---
 
-## Tech Stack
+## ✨ Features
 
-- **Frontend:** React 19, Vite, Zustand, React Router, TailwindCSS
-- **Backend:** Node.js, Express, Mongoose, Socket.io, BullMQ, Multer, Cloudinary
-- **Database:** MongoDB Atlas
-- **Queue/Cache:** Redis
-- **Containerization:** Docker, Docker Compose
-- **Web Server:** Nginx (for SPA routing and API proxy)
+- **Student Portal:** Project upload, bidding, dashboard, notifications, and profile management
+- **Admin Portal:** Project verification, bidding management, results, and user management
+- **Real-Time Bidding:** Powered by Socket.io and BullMQ
+- **Authentication:** JWT-based secure login for students and teachers
+- **File Uploads:** Integrated with Cloudinary
+- **Caching:** Redis-powered caching for improved performance
+- **Production-Ready:** Dockerized with Nginx reverse proxy
 
 ---
 
-## Getting Started
+## 🛠️ Tech Stack
+
+| Layer | Technologies |
+|-------|-------------|
+| **Frontend** | React 19, Vite, Zustand, React Router, TailwindCSS |
+| **Landing** | Next.js 15, TypeScript, Shadcn UI |
+| **Backend** | Node.js, Express, Mongoose, Socket.io, BullMQ |
+| **Database** | MongoDB Atlas |
+| **Cache/Queue** | Redis, BullMQ |
+| **DevOps** | Docker, Docker Compose, Nginx |
+
+---
+
+## 🚀 Getting Started
 
 ### Prerequisites
 
-- [Node.js](https://nodejs.org/) (v18+)
+- [Node.js](https://nodejs.org/) (v20+)
 - [Docker](https://www.docker.com/) & [Docker Compose](https://docs.docker.com/compose/)
 - [MongoDB Atlas](https://www.mongodb.com/cloud/atlas) account
 - [Cloudinary](https://cloudinary.com/) account
@@ -66,97 +61,134 @@ docker-compose.yml
 ### Local Development
 
 1. **Clone the repository:**
-
-   ```sh
-   git clone <your-repo-url>
-   cd <your-repo-folder>
+   ```bash
+   git clone https://github.com/Devanshu78/Hackstock.git
+   cd Hackstock
    ```
 
-2. **Install dependencies for all apps:**
-
-   ```sh
-   npm install
+2. **Install dependencies for each app:**
+   ```bash
+   # Server
+   cd server && npm install && cd ..
+   
+   # Client
+   cd client && npm install && cd ..
+   
+   # Admin
+   cd admin && npm install && cd ..
+   
+   # Landing
+   cd landing && npm install && cd ..
    ```
 
-3. **Set up environment variables:**  
-   Copy `.env.example` files in each app to `.env` and fill in your secrets.
+3. **Set up environment variables:**
+   - Copy `.env.example` to `.env` in each folder
+   - Fill in your secrets (see [Environment Variables](#environment-variables))
 
 4. **Start Redis (if not using Docker):**
-
-   ```sh
+   ```bash
    docker run --name dev-redis -p 6379:6379 redis:7
    ```
 
-5. **Run all apps in development mode:**
-
-   ```sh
-   npm run dev
+5. **Run apps in development mode:**
+   ```bash
+   # Terminal 1 - Server
+   cd server && npm run dev
+   
+   # Terminal 2 - Client
+   cd client && npm run dev
+   
+   # Terminal 3 - Admin
+   cd admin && npm run dev
+   
+   # Terminal 4 - Landing
+   cd landing && npm run dev
    ```
 
-   _(Requires Turborepo or npm workspaces setup)_
-
 6. **Access the apps:**
-   - Client: [http://localhost:5173](http://localhost:5173)
-   - Admin: [http://localhost:5174](http://localhost:5174)
-   - Server API: [http://localhost:5000](http://localhost:5000)
+   | App | URL |
+   |-----|-----|
+   | Client | http://localhost:5173 |
+   | Admin | http://localhost:5174 |
+   | Server API | http://localhost:8000 |
+   | Landing | http://localhost:3000 |
 
 ---
 
-## Environment Variables
+## 🔐 Environment Variables
 
-Each app requires its own `.env` file.  
-**Example for `apps/server/.env`:**
-
-```
+### `server/.env`
+```env
 PORT=8000
-MONGO_URI=mongodb+srv://<user>:<pass>@cluster.mongodb.net
-DBNAME=...
+MONGODB_URI=mongodb+srv://<user>:<pass>@cluster.mongodb.net
+DBNAME=hackstock
 REDIS_HOST=localhost
 REDIS_PORT=6379
 CLOUDINARY_NAME=...
 CLOUDINARY_KEY=...
 CLOUDINARY_SECRET=...
 ACCESS_TOKEN_SECRET=...
+CORS_ORIGIN_1=http://localhost:5173
+CORS_ORIGIN_2=http://localhost:5174
 ```
 
-**Example for `apps/client/.env`:**
-
+### `client/.env`
+```env
+VITE_SERVER_URL=http://localhost:8000/api/v1/user
 ```
-VITE_SERVER_URL=http://localhost:5000/api/v1/user
-```
 
-**Example for `apps/admin/.env`:**
-
-```
-VITE_SERVER_URL=http://localhost:5000/api/v1/admin
+### `admin/.env`
+```env
+VITE_SERVER_URL=http://localhost:8000/api/v1/admin
 ```
 
 ---
 
-## Docker Usage
+## 🐳 Docker Usage
 
 ### Build and Run All Services
-
-```sh
-docker-compose up --build -d
+```bash
+docker-compose -p hackstock up --build -d
 ```
 
-- Client: [http://localhost:3000](http://localhost:3000)
-- Admin: [http://localhost:3001](http://localhost:3001)
-- Server and Redis are internal-only (not exposed).
+### Access Docker Apps
+| App | URL |
+|-----|-----|
+| Client | http://localhost:3000 |
+| Admin | http://localhost:3001 |
+| Server API | http://localhost:8000 |
 
-### Stop All Services
+### Useful Commands
+```bash
+# View logs
+docker-compose -p hackstock logs -f
 
-```sh
-docker-compose down
+# Stop all services
+docker-compose -p hackstock down
+
+# Rebuild fresh
+docker-compose -p hackstock up --build -d
 ```
 
 ---
 
-## Contributing
+## 🌐 Deployment
 
-Contributions are welcome! Please open issues or submit pull requests for improvements or bug fixes.
+| App | Platform |
+|-----|----------|
+| Client | Vercel |
+| Admin | Vercel |
+| Landing | Vercel |
+| Server | AWS EC2 |
+
+See [EC2 Deployment Guide](./docs/ec2-deployment.md) for backend deployment instructions.
 
 ---
 
-**Made with ❤️ by Devanshu Pandey.**
+## 📄 License
+
+This project is licensed under the ISC License.
+
+---
+
+**Made with ❤️ by Devanshu Pandey**
