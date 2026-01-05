@@ -4,26 +4,30 @@ services:
     image: redis:7
 
   server:
-    build: ./apps/server
+    build: ./server
+    ports:
+      - "8000:8000"
     env_file:
-      - ./apps/server/.env
+      - ./server/.env
+    environment:
+      - REDIS_HOST=redis
     depends_on:
       - redis
 
   client:
-    build: ./apps/client
+    build: ./client
     ports:
-      - "3000:80"
+      - "5173:80"
     env_file:
-      - ./apps/client/.env
+      - ./client/.env
     depends_on:
       - server
 
   admin:
-    build: ./apps/admin
+    build: ./admin
     ports:
-      - "3001:80"
+      - "5174:80"
     env_file:
-      - ./apps/admin/.env
+      - ./admin/.env
     depends_on:
       - server
