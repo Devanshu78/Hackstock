@@ -109,8 +109,8 @@ const registerManyUsers = async (req, res) => {
   try {
     const { users } = req.body; // Expecting an array of user objects
     if (!Array.isArray(users) || users.length === 0) {
-      return res.status(400).json({ 
-        message: "Please provide an array of users to register" 
+      return res.status(400).json({
+        message: "Please provide an array of users to register"
       });
     }
 
@@ -255,13 +255,13 @@ const loginUser = async (req, res) => {
     const accessOption = {
       httpOnly: true,
       secure: false,
-      samSite: "lax",
+      sameSite: "lax",
       maxAge: eval(process.env.ACCESS_TOKEN_EXPIRY) * 1000,
     };
     const refreshOption = {
       httpOnly: true,
       secure: false,
-      samSite: "lax",
+      sameSite: "lax",
       maxAge: eval(process.env.REFRESH_TOKEN_EXPIRY) * 1000,
     };
 
@@ -374,6 +374,7 @@ const generateAccessToken = async (req, res) => {
     const accessOption = {
       httpOnly: true,
       secure: false,
+      sameSite: "lax",
       maxAge: eval(process.env.ACCESS_TOKEN_EXPIRY) * 1000,
     };
     return res
@@ -389,11 +390,10 @@ const generateAccessToken = async (req, res) => {
 const updateUserData = async (req, res) => {
   try {
     const { cllgName } = req.body;
-    console.log({cllgName});
-    
+
     if (!cllgName) {
-      return res.status(400).json({ 
-        message: "College name is required" 
+      return res.status(400).json({
+        message: "College name is required"
       });
     }
 

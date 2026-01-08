@@ -9,31 +9,28 @@ import { registerSocketEvents } from "./sockets/socketHandler.js";
 
 const app = express();
 
-const allowedOrigins = [process.env.CORS_ORIGIN_1, process.env.CORS_ORIGIN_2];
+const allowedOrigins = [
+  process.env.CORS_ORIGIN_1,
+  process.env.CORS_ORIGIN_2,
+].filter(Boolean); // Remove undefined values
+
+// Robust origin checker function
+const checkOrigin = (origin, callback) => {
+  // Allow requests with no origin (like mobile apps, curl, or server-to-server)
+  if (!origin) return callback(null, true);
+
+  if (allowedOrigins.indexOf(origin) !== -1) {
+    callback(null, true);
+  } else {
+    console.log(`❌ BLOCKING ORIGIN: ${origin}`); // Log this to see what's failing!
+    console.log(`✅ ALLOWED LIST: ${allowedOrigins}`);
+    callback(new Error("Not allowed by CORS"));
+  }
+};
 
 app.use(
   cors({
-    origin: (origin, callback) => {
-      if (!origin) return callback(null, true);
-
-      // Check if origin matches allowed patterns
-      const isAllowed = allowedOrigins.some((allowed) => {
-        if (typeof allowed === "string") {
-          return origin === allowed;
-        }
-        if (allowed instanceof RegExp) {
-          return allowed.test(origin);
-        }
-        return false;
-      });
-
-      if (isAllowed) {
-        callback(null, true);
-      } else {
-        console.log(`❌ CORS blocked origin: ${origin}`);
-        callback(new Error("Not allowed by CORS"));
-      }
-    },
+    origin: checkOrigin,
     methods: "GET,POST,PUT,DELETE,PATCH,HEAD,OPTIONS",
     credentials: true,
     optionsSuccessStatus: 200,
@@ -53,26 +50,7 @@ export const server = http.createServer(app);
 
 export const io = new Server(server, {
   cors: {
-    origin: (origin, callback) => {
-      if (!origin) return callback(null, true);
-
-      const isAllowed = allowedOrigins.some((allowed) => {
-        if (typeof allowed === "string") {
-          return origin === allowed;
-        }
-        if (allowed instanceof RegExp) {
-          return allowed.test(origin);
-        }
-        return false;
-      });
-
-      if (isAllowed) {
-        callback(null, true);
-      } else {
-        console.log(`❌ Socket.IO CORS blocked origin: ${origin}`);
-        callback(new Error("Not allowed by CORS"));
-      }
-    },
+    origin: checkOrigin,
     methods: ["GET", "POST"],
     credentials: true,
   },
